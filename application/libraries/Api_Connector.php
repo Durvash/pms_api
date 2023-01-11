@@ -1,6 +1,13 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
+/*
+* Need to set to allow CORS origin request
+*/
+header('Access-Control-Allow-Origin: *');
+header("Access-Control-Allow-Headers: *");
+header("Access-Control-Expose-Headers: *");
+
 class Api_Connector
 {
 	protected $CI;

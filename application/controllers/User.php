@@ -245,25 +245,25 @@ class User extends REST_Controller {
 			$this->load->library('form_validation');
 			$this->load->helper('security');   /// to use for xss_clean >> into the form_validation
 			
-			$this->form_validation->set_rules('username', 'User Name', 'trim|required|min_length[3]|max_length[16]|xss_clean');
+			$this->form_validation->set_rules('email', 'Email Address', 'trim|required|min_length[6]|max_length[40]|valid_email|xss_clean');
 			$this->form_validation->set_rules('password', 'Password', 'trim|required|min_length[6]|max_length[32]|xss_clean|callback_isPasswordStrong');
 			
 			if ($this->form_validation->run() == FALSE)
 			{
-				if(!empty(form_error('username')))
+				if(!empty(form_error('email')))
 				{
-					throw new Exception(form_error('username'));
+					throw new Exception(removeHtmlTags(form_error('email')));
 				}
 				if(!empty(form_error('password')))
 				{
-					throw new Exception(form_error('password'));
+					throw new Exception(removeHtmlTags(form_error('password')));
 				}
 				
 			} else {
 				
-				$username = $this->input->post('username');
+				$email = $this->input->post('email');
 				$password = $this->input->post('password');
-				$result = $this->user_model->checkUserNamePassword($username, $password);
+				$result = $this->user_model->checkEmailPassword($email, $password);
 				
 				if(empty($result))
 				{

@@ -579,6 +579,7 @@ abstract class REST_Controller extends \CI_Controller {
         */
         $this->load->library('Api_Connector');
         $this->log_id = $this->api_connector->basic_auth($this->_args);
+        // pr('request time >> '. $this->log_id);
     }
 
     /**
@@ -834,6 +835,7 @@ abstract class REST_Controller extends \CI_Controller {
         ob_end_flush();
         // Otherwise dump the output automatically
 
+        // pr('response time >> '. $this->log_id);
         if(is_numeric($this->log_id))
         {
             $this->api_connector->updateApiLog($this->log_id, $data);
