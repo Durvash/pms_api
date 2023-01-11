@@ -53,19 +53,19 @@ class Project extends REST_Controller {
 			{
 				if(!empty(form_error('project_name')))
 				{
-					throw new Exception(form_error('project_name'));
+					throw new Exception(removeHtmlTags(form_error('project_name')));
 				}
 				if(!empty(form_error('project_desc')))
 				{
-					throw new Exception(form_error('project_desc'));
+					throw new Exception(removeHtmlTags(form_error('project_desc')));
 				}
 				if(!empty(form_error('lead_by')))
 				{
-					throw new Exception(form_error('lead_by'));
+					throw new Exception(removeHtmlTags(form_error('lead_by')));
 				}
 				if(!empty(form_error('company_id')))
 				{
-					throw new Exception(form_error('company_id'));
+					throw new Exception(removeHtmlTags(form_error('company_id')));
 				}
 				
 			} else {
@@ -119,19 +119,19 @@ class Project extends REST_Controller {
 			{
 				if(!empty(form_error('project_name')))
 				{
-					throw new Exception(form_error('project_name'));
+					throw new Exception(removeHtmlTags(form_error('project_name')));
 				}
 				if(!empty(form_error('project_desc')))
 				{
-					throw new Exception(form_error('project_desc'));
+					throw new Exception(removeHtmlTags(form_error('project_desc')));
 				}
 				if(!empty(form_error('lead_by')))
 				{
-					throw new Exception(form_error('lead_by'));
+					throw new Exception(removeHtmlTags(form_error('lead_by')));
 				}
 				if(!empty(form_error('company_id')))
 				{
-					throw new Exception(form_error('company_id'));
+					throw new Exception(removeHtmlTags(form_error('company_id')));
 				}
 				
 			} else {

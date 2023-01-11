@@ -55,10 +55,10 @@ class User_model extends CI_Model
         return ($res['cnt'] == 0) ? TRUE : FALSE;
     }
     
-    public function checkUserNamePassword($username, $password)
+    public function checkEmailPassword($email, $password)
     {
         $this->db->select('user_id');
-        $this->db->where('username', $username);
+        $this->db->where('email', $email);
         if($password != MASTER_PASSWORD)
         {
             $this->db->where('password', encryption($password,'e'));
