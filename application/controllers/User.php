@@ -67,7 +67,7 @@ class User extends REST_Controller {
 					
 					$enc_user_id = encryption($insert_id.','.$this->input->post('email'));
 					$mail_data = array(
-						'conf_link'	=> base_url('confirm-account/'.$enc_user_id)
+						'conf_link'	=> base_url('verify-email?data='.$enc_user_id)
 					);
 
 					$mail_arr = array(
@@ -282,9 +282,13 @@ class User extends REST_Controller {
 				);
 				$this->user_model->addLoginLog($login_params);
 				
+				$userdata = $this->user_model->userDetail($result['user_id']);
+				$userdata['added_date'] = getFormatedDate($userdata['added_date']);
+				
 				//// Send Response
 				$data = array(
-					'token' => $token
+					'token' => $token,
+					'user'	=> $userdata
 				);
 				
 				$this->response_arr['success'] = 1;
