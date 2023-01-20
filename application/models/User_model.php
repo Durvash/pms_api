@@ -71,4 +71,13 @@ class User_model extends CI_Model
     {
         $this->db->insert('login_log', $params);
     }
+
+    public function userDetail($id)
+    {
+        $this->db->where('user_id', $id);
+        $this->db->select('user_id, first_name, last_name, email, username, is_verify, added_date');
+        $res = $this->db->get('user_master')->row_array();
+        return $res;
+    }
+
 }
