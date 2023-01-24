@@ -11,6 +11,7 @@ $route['signup'] = 'user/signup';
 $route['confirm_account/(:any)'] = 'user/confirmAccount/$1';
 $route['update_account'] = 'user/updateAccount';
 $route['login'] = 'user/login';
+$route['logout'] = 'user/logout';
 
 $route['add_company'] = 'company/addCompany';
 $route['update_company'] = 'company/updateCompany';

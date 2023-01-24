@@ -122,9 +122,12 @@ class User extends REST_Controller {
 					);
 
 					$this->user_model->updateUser($params);
+
+					$userdata = $this->user_model->userDetail($data[0]);
 					
 					$this->response_arr['success'] = 1;
 					$this->response_arr['message'] = 'Your account has been confirmed!';
+					$this->response_arr['data'] = $userdata;
 				}
 
 			} else {
@@ -148,9 +151,10 @@ class User extends REST_Controller {
 
 			$this->form_validation->set_rules('first_name', 'First Name', 'trim|required|min_length[2]|max_length[12]');
 			$this->form_validation->set_rules('last_name', 'Last Name', 'trim|required|min_length[2]|max_length[12]');
-			$this->form_validation->set_rules('username', 'User Name', 'trim|required|min_length[3]|max_length[16]|callback_isUniqueUser');
-			$this->form_validation->set_rules('password', 'Password', 'trim|required|min_length[6]|max_length[32]|matches[conf_password]|xss_clean|callback_isPasswordStrong');
-			$this->form_validation->set_rules('conf_password', 'Confirm Password', 'trim|required|min_length[6]|max_length[32]|xss_clean');
+			// $this->form_validation->set_rules('username', 'User Name', 'trim|required|min_length[3]|max_length[16]|callback_isUniqueUser');
+			$this->form_validation->set_rules('password', 'Password', 'trim|required|min_length[6]|max_length[16]|xss_clean|callback_isPasswordStrong');
+			// $this->form_validation->set_rules('password', 'Password', 'trim|required|min_length[6]|max_length[16]|matches[conf_password]|xss_clean|callback_isPasswordStrong');
+			// $this->form_validation->set_rules('conf_password', 'Confirm Password', 'trim|required|min_length[6]|max_length[16]|xss_clean');
 			
 			if ($this->form_validation->run() == FALSE)
 			{
@@ -163,18 +167,18 @@ class User extends REST_Controller {
 				{
 					$err_list['last_name'] = removeHtmlTags(form_error('last_name'));
 				}
-				if(!empty(form_error('username')))
-				{
-					$err_list['username'] = removeHtmlTags(form_error('username'));
-				}
+				// if(!empty(form_error('username')))
+				// {
+				// 	$err_list['username'] = removeHtmlTags(form_error('username'));
+				// }
 				if(!empty(form_error('password')))
 				{
 					$err_list['password'] = removeHtmlTags(form_error('password'));
 				}
-				if(!empty(form_error('conf_password')))
-				{
-					$err_list['conf_password'] = removeHtmlTags(form_error('conf_password'));
-				}
+				// if(!empty(form_error('conf_password')))
+				// {
+				// 	$err_list['conf_password'] = removeHtmlTags(form_error('conf_password'));
+				// }
 
 				$this->response_arr['error_list'] = $err_list;
 				throw new Exception(array_values($err_list)[0]);
@@ -190,10 +194,10 @@ class User extends REST_Controller {
 						'user_id'		=> $user_id,
 						'first_name'	=> $this->input->post('first_name'),
 						'last_name'		=> $this->input->post('last_name'),
-						'username'		=> $this->input->post('username'),
+						#'username'		=> $this->input->post('username'),
 						'password'		=> encryption($this->input->post('password')),
-						'added_by'		=> $user_id,
-						'added_date'	=> getCurrentDateTime()
+						'updated_by'	=> $user_id,
+						'updated_date'	=> getCurrentDateTime()
 					);
 					
 					$this->user_model->updateUser($params);
@@ -294,6 +298,39 @@ class User extends REST_Controller {
 				$this->response_arr['success'] = 1;
 				$this->response_arr['message'] = $this->lang->line('LOGIN_SUCCESS');
 				$this->response_arr['data']	   = $data;
+			}
+			
+		} catch (Exception $e) {
+			$this->response_arr['success'] = 0;
+			$this->response_arr['message'] = $e->getMessage();
+		}
+		
+		$this->response($this->response_arr, REST_Controller::HTTP_OK);
+	}
+	
+	public function logout_post()
+	{
+		try {
+			$this->load->library('form_validation');
+			$this->load->helper('security');   /// to use for xss_clean >> into the form_validation
+			
+			$this->form_validation->set_rules('user_id', 'User ID', 'trim|required');
+			$this->form_validation->set_rules('from_all_device', 'From All Device', 'trim|required');
+			
+			if ($this->form_validation->run() == FALSE)
+			{
+				throw new Exception('Something went wrong, please try again!');
+				
+			} else {
+				
+				$user_id = $this->input->post('user_id');
+				$token = $this->input->post('token');
+				$from_all_device = $this->input->post('from_all_device');
+				$from_all_device = (isset($from_all_device) && strtolower($from_all_device) == 'yes') ? 'yes' : 'no';
+				$this->user_model->userLogout($user_id, $token, $from_all_device);
+				
+				$this->response_arr['success'] = 1;
+				$this->response_arr['message'] = $this->lang->line('LOGOUT_SUCCESS');
 			}
 			
 		} catch (Exception $e) {

@@ -27,6 +27,7 @@ $lang['USERNAME_EXIST'] = 'UserName already exist!';
 $lang['PASSWORD_RULE'] = 'The password must be contains at least one letter and one digit!';
 $lang['INVALID_LOGIN'] = 'Invalid Username OR Password!';
 $lang['LOGIN_SUCCESS'] = 'Login Success.';
+$lang['LOGOUT_SUCCESS'] = 'Logout Success.';
 $lang['DEVICE_TYPE_NOT_FOUND'] = 'Device not found in header!';
 $lang['AUTH_TOKEN_MISSING'] = 'Auth token is missing!';
 $lang['AUTH_TOKEN_EXPIRED'] = 'Auth token has been expired!';
