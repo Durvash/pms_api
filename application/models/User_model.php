@@ -72,6 +72,18 @@ class User_model extends CI_Model
         $this->db->insert('login_log', $params);
     }
 
+    public function userLogout($user_id, $token, $from_all_device)
+    {
+        $this->db->set('is_login', 0);
+        $this->db->set('updated_date', getCurrentDateTime());
+        $this->db->where('user_id', $user_id);
+        if(strtolower($from_all_device) != 'yes')
+        {
+            $this->db->where('token', $token);
+        }
+        $this->db->update('login_log');
+    }
+    
     public function userDetail($id)
     {
         $this->db->where('user_id', $id);

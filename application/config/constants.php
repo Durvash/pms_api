@@ -66,5 +66,7 @@ defined('TOKEN_VALID_HOUR')     OR define('TOKEN_VALID_HOUR', 1);
 defined('API_WITHOUT_TOKEN')    OR define('API_WITHOUT_TOKEN', json_encode(array(
     'signup',
     'login',
-    'update_account'
+    'update_account',
+    'logout',
+    'confirm_account'
 )));
