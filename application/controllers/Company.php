@@ -58,14 +58,16 @@ class Company extends REST_Controller {
 			
 			if($insert_id)
 			{
-				$this->index_get($insert_id);
+				$result = $this->company_model->companyList($insert_id);
+				$this->response_arr['success'] = 1;
+				$this->response_arr['message'] = $this->lang->line('DATA_ADDED');
+				$this->response_arr['data'] = $result[0];
+				$this->response_arr['data']['added_date'] = getFormatedDate($this->response_arr['data']['added_date']);
 	
 			} else {
 				$this->response_arr['success'] = 0;
 				$this->response_arr['message'] = $this->lang->line('UNKNOWN_ERROR');
 			}
-			
-			$this->response_arr['message'] = $this->lang->line('DATA_ADDED');
 			
 		} catch (Exception $e) {
 			
@@ -97,9 +99,11 @@ class Company extends REST_Controller {
 			// pr($params,1);
 			$this->company_model->updateCompany($params);
 			
-			$this->index_get($input_params['company_id']);
-			
+			$result = $this->company_model->companyList($input_params['company_id']);
+			$this->response_arr['success'] = 1;
 			$this->response_arr['message'] = $this->lang->line('DATA_UPDATED');
+			$this->response_arr['data'] = $result[0];
+			$this->response_arr['data']['added_date'] = getFormatedDate($this->response_arr['data']['added_date']);
 			
 		} catch (Exception $e) {
 			

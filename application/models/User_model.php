@@ -28,8 +28,13 @@ class User_model extends CI_Model
 
     public function updateUser($params)
     {
-        $this->db->where('user_id', $params['user_id']);
-        $this->db->update('user_master', $params);
+        $user_id = $params['user_id'];
+        if(is_numeric($user_id))
+        {
+            unset($params['user_id']);
+            $this->db->where('user_id', $user_id);
+            $this->db->update('user_master', $params);
+        }
     }
 
     public function deleteUser($user_id)
