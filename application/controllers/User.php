@@ -151,6 +151,7 @@ class User extends REST_Controller {
 
 			$this->form_validation->set_rules('first_name', 'First Name', 'trim|required|min_length[2]|max_length[12]');
 			$this->form_validation->set_rules('last_name', 'Last Name', 'trim|required|min_length[2]|max_length[12]');
+			$this->form_validation->set_rules('email', 'Email', 'trim|required|valid_email|min_length[6]|max_length[60]');
 			// $this->form_validation->set_rules('username', 'User Name', 'trim|required|min_length[3]|max_length[16]|callback_isUniqueUser');
 			$this->form_validation->set_rules('password', 'Password', 'trim|required|min_length[6]|max_length[16]|xss_clean|callback_isPasswordStrong');
 			// $this->form_validation->set_rules('password', 'Password', 'trim|required|min_length[6]|max_length[16]|matches[conf_password]|xss_clean|callback_isPasswordStrong');
@@ -167,18 +168,22 @@ class User extends REST_Controller {
 				{
 					$err_list['last_name'] = removeHtmlTags(form_error('last_name'));
 				}
-				// if(!empty(form_error('username')))
-				// {
-				// 	$err_list['username'] = removeHtmlTags(form_error('username'));
-				// }
+				if(!empty(form_error('email')))
+				{
+					$err_list['email'] = removeHtmlTags(form_error('email'));
+				}
+				/* if(!empty(form_error('username')))
+				{
+					$err_list['username'] = removeHtmlTags(form_error('username'));
+				} */
 				if(!empty(form_error('password')))
 				{
 					$err_list['password'] = removeHtmlTags(form_error('password'));
 				}
-				// if(!empty(form_error('conf_password')))
-				// {
-				// 	$err_list['conf_password'] = removeHtmlTags(form_error('conf_password'));
-				// }
+				/* if(!empty(form_error('conf_password')))
+				{
+					$err_list['conf_password'] = removeHtmlTags(form_error('conf_password'));
+				} */
 
 				$this->response_arr['error_list'] = $err_list;
 				throw new Exception(array_values($err_list)[0]);
@@ -202,8 +207,31 @@ class User extends REST_Controller {
 					
 					$this->user_model->updateUser($params);
 					
+					//// Start Set Login
+					$token = generateToken();
+					
+					//// Add Login Log
+					$login_params = array(
+						'user_id'	 => $user_id,
+						'token'		 => $token,
+						'device'	 => getHeaderValue('device'),
+						'added_date' => getCurrentDateTime()
+					);
+					$this->user_model->addLoginLog($login_params);
+					
+					$userdata = $this->user_model->userDetail($user_id);
+					$userdata['added_date'] = getFormatedDate($userdata['added_date']);
+					
+					//// Send Response
+					$data = array(
+						'token' => $token,
+						'user'	=> $userdata
+					);
+					//// END
+
 					$this->response_arr['success'] = 1;
 					$this->response_arr['message'] = $this->lang->line('ACCOUNT_UPDATED');
+					$this->response_arr['data'] = $data;
 					
 				} else {
 					$this->response_arr['success'] = 1;
@@ -277,7 +305,6 @@ class User extends REST_Controller {
 				$token = generateToken();
 				
 				//// Add Login Log
-				
 				$login_params = array(
 					'user_id'	 => $result['user_id'],
 					'token'		 => $token,
