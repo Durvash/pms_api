@@ -3,7 +3,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 require APPPATH . 'libraries/REST_Controller.php';
 
-class Project extends REST_Controller {
+class Task extends REST_Controller {
 
 	public $response_arr = array(
 		'success' => 0,
@@ -13,12 +13,12 @@ class Project extends REST_Controller {
 	function __construct()
 	{
         parent::__construct();
-        $this->load->model('project_model');
+        $this->load->model('task_model');
     }
 
 	public function index_get($id = 0)
 	{
-		$result = $this->project_model->projectList($id);
+		$result = $this->task_model->taskList($id);
 
 		if(!empty($result))
 		{
@@ -80,11 +80,11 @@ class Project extends REST_Controller {
 					'added_date'	=> getCurrentDateTime()
 				);
 				// pr($params,1);
-				$insert_id = $this->project_model->addProject($params);
+				$insert_id = $this->task_model->addProject($params);
 				
 				if($insert_id)
 				{
-					$result = $this->project_model->projectList($insert_id);
+					$result = $this->task_model->taskList($insert_id);
 					$this->response_arr['success'] = 1;
 					$this->response_arr['message'] = $this->lang->line('DATA_ADDED');
 					$this->response_arr['data'] = $result[0];
@@ -154,9 +154,9 @@ class Project extends REST_Controller {
 				$params['project_id']	= $input_params['project_id'];
 
 				// pr($params,1);
-				$this->project_model->updateProject($params);
+				$this->task_model->updateProject($params);
 				
-				$result = $this->project_model->projectList($input_params['project_id']);
+				$result = $this->task_model->taskList($input_params['project_id']);
 				$this->response_arr['success'] = 1;
 				$this->response_arr['message'] = $this->lang->line('DATA_UPDATED');
 				$this->response_arr['data'] = $result[0];
@@ -180,7 +180,7 @@ class Project extends REST_Controller {
 				throw new Exception("Project id is required.");
 			}
 			
-			$this->project_model->deleteProject($input_params['project_id']);
+			$this->task_model->deleteProject($input_params['project_id']);
 			
 			$this->index_get();
 			
@@ -193,4 +193,159 @@ class Project extends REST_Controller {
 
 		$this->response($this->response_arr, REST_Controller::HTTP_OK);
 	}
+	
+
+	////// Task Tab List, Add, Update, Delete Operations
+
+	public function taskTabList_get($id = 0)
+	{
+		$result = $this->task_model->taskTabList($id);
+
+		if(!empty($result))
+		{
+			$new_result = array_map(function($var) {
+				$var['added_date'] = getFormatedDate($var['added_date']);
+				return $var;
+			}, $result);
+			
+			$this->response_arr['success'] = 1;
+			$this->response_arr['message'] = $this->lang->line('DATA_FOUND');
+			$this->response_arr['data'] = $new_result;
+		}
+		
+		$this->response($this->response_arr, REST_Controller::HTTP_OK);
+	}
+    
+	public function addTaskTab_post()
+	{
+		$input_params = $this->input->post();
+		// pr($input_params,1);
+
+		try {
+			$this->load->library('form_validation');
+			
+			$this->form_validation->set_rules('tab_list_name', 'Task Section', 'trim|required|min_length[2]|max_length[32]|xss_clean');
+			$this->form_validation->set_rules('project_id', 'Project', 'trim|required');
+			
+			if ($this->form_validation->run() == FALSE)
+			{
+				if(!empty(form_error('tab_list_name')))
+				{
+					throw new Exception(removeHtmlTags(form_error('tab_list_name')));
+				}
+				if(!empty(form_error('project_id')))
+				{
+					throw new Exception(removeHtmlTags(form_error('project_id')));
+				}
+				
+			} else {
+
+				$params = array(
+					'tab_list_name'	=> $input_params['tab_list_name'],
+					'project_id'	=> $input_params['project_id'],
+					'added_by'		=> 1,
+					'added_date'	=> getCurrentDateTime()
+				);
+				// pr($params,1);
+				$insert_id = $this->task_model->addTaskTab($params);
+				
+				if($insert_id)
+				{
+					$result = $this->task_model->taskTabList($insert_id);
+					$this->response_arr['success'] = 1;
+					$this->response_arr['message'] = $this->lang->line('DATA_ADDED');
+					$this->response_arr['data'] = $result[0];
+					$this->response_arr['data']['added_date'] = getFormatedDate($this->response_arr['data']['added_date']);
+					
+				} else {
+					$this->response_arr['success'] = 0;
+					$this->response_arr['message'] = $this->lang->line('UNKNOWN_ERROR');
+				}
+			}
+
+		} catch (Exception $e) {
+			$this->response_arr['success'] = 0;
+			$this->response_arr['message'] = $e->getMessage();
+		}
+
+		$this->response($this->response_arr, REST_Controller::HTTP_OK);
+	}
+    
+	public function updateTaskTab_post()
+	{
+		$input_params = $this->input->post();
+		// pr($input_params,1);
+		try {
+			$this->load->library('form_validation');
+			
+			$this->form_validation->set_rules('tab_list_name', 'Task Section', 'trim|required|min_length[2]|max_length[32]|xss_clean');
+			$this->form_validation->set_rules('project_id', 'Project', 'trim|required');
+			
+			if ($this->form_validation->run() == FALSE)
+			{
+				if(!empty(form_error('tab_list_name')))
+				{
+					throw new Exception(removeHtmlTags(form_error('tab_list_name')));
+				}
+				if(!empty(form_error('project_id')))
+				{
+					throw new Exception(removeHtmlTags(form_error('project_id')));
+				}
+				
+			} else {
+
+				if(!$input_params['tab_list_id'] && !is_numeric($input_params['tab_list_id'])) {
+					throw new Exception("Task List id is required.");
+				}
+				
+				$params = array(
+					'updated_by'	=> 1,
+					'updated_date'	=> getCurrentDateTime()
+				);
+				
+				$params['tab_list_name']= $input_params['tab_list_name'];
+				$params['project_id']	= $input_params['project_id'];
+				$params['tab_list_id']	= $input_params['tab_list_id'];
+
+				// pr($params,1);
+				$this->task_model->updateTaskTab($params);
+				
+				$result = $this->task_model->taskTabList($input_params['tab_list_id']);
+				$this->response_arr['success'] = 1;
+				$this->response_arr['message'] = $this->lang->line('DATA_UPDATED');
+				$this->response_arr['data'] = $result[0];
+				$this->response_arr['data']['added_date'] = getFormatedDate($this->response_arr['data']['added_date']);
+			}
+			
+		} catch (Exception $e) {
+			$this->response_arr['success'] = 0;
+			$this->response_arr['message'] = $e->getMessage();
+		}
+
+		$this->response($this->response_arr, REST_Controller::HTTP_OK);
+	}
+    
+	public function deleteTaskTab_post()
+	{
+		$input_params = $this->input->post();
+		// pr($input_params,1);
+		try {
+			if(!$input_params['tab_list_id'] && !is_numeric($input_params['tab_list_id'])) {
+				throw new Exception("Task List id is required.");
+			}
+			
+			$this->task_model->deleteTaskTab($input_params['tab_list_id']);
+			
+			$this->index_get();
+			
+			$this->response_arr['message'] = $this->lang->line('DATA_DELETED');
+			
+		} catch (Exception $e) {
+			$this->response_arr['success'] = 0;
+			$this->response_arr['message'] = $e->getMessage();
+		}
+
+		$this->response($this->response_arr, REST_Controller::HTTP_OK);
+	}
+	
 }
