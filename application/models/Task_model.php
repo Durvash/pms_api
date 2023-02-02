@@ -39,7 +39,19 @@ class Task_model extends CI_Model
         $this->db->delete('task_list');
     }
     
-    public function taskTabList($id = '')
+    public function taskTabList($project_id = '')
+    {
+        if (!empty($project_id) && is_numeric($project_id)) {
+            $this->db->where('project_id', $project_id);
+        }
+
+        $this->db->select('tab_list_id, tab_list_name, project_id');
+        $this->db->order_by('tab_list_id', 'DESC');
+        $res = $this->db->get('task_tab_list')->result_array();
+        return $res;
+    }
+
+    public function taskTabDetail($id = '')
     {
         if (!empty($id) && is_numeric($id)) {
             $this->db->where('tab_list_id', $id);
@@ -69,4 +81,9 @@ class Task_model extends CI_Model
         $this->db->delete('task_tab_list');
     }
 
+    public function deleteAllTaskTab($project_id)
+    {
+        $this->db->where('project_id', $project_id);
+        $this->db->delete('task_tab_list');
+    }
 }

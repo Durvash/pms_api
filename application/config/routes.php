@@ -20,3 +20,13 @@ $route['delete_company'] = 'company/deleteCompany';
 $route['add_project'] = 'project/addProject';
 $route['update_project'] = 'project/updateProject';
 $route['delete_project'] = 'project/deleteProject';
+
+$route['add_task_section'] = 'task/addTaskTab';
+$route['add_multi_task_section'] = 'task/addMultiTaskTab';
+$route['update_task_section'] = 'task/updateTaskTab';
+$route['delete_task_section'] = 'project/deleteTaskTab';
+
+$route['add_task'] = 'task/addTask';
+$route['add_multi_task'] = 'task/addMultiTask';
+$route['update_task'] = 'task/updateTask';
+$route['delete_task'] = 'project/deleteTask';
