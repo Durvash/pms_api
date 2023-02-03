@@ -35,6 +35,82 @@ class Task extends REST_Controller {
 		$this->response($this->response_arr, REST_Controller::HTTP_OK);
 	}
     
+	public function addMultiTask_post()
+	{
+		$input_params = $this->input->post();
+		// pr($input_params,1);
+
+		try {
+			$this->load->library('form_validation');
+			$this->load->helper('security');   /// to use for xss_clean >> into the form_validation
+			
+			$this->form_validation->set_rules('tab_list_id', 'Task Section Id', 'trim|required');
+			$this->form_validation->set_rules('task_title[]', 'Task Title', 'trim|required|min_length[2]|max_length[255]|xss_clean');
+			// $this->form_validation->set_rules('task_desc[]', 'Task Description', 'trim|required|min_length[10]|max_length[500]|xss_clean');
+			$this->form_validation->set_rules('assign_to', 'Assign To', 'trim|required');
+			$this->form_validation->set_rules('report_to', 'Report To', 'trim|required');
+			$this->form_validation->set_rules('priority', 'Priority', 'trim|required');
+			
+			if ($this->form_validation->run() == FALSE)
+			{
+				if(!empty(form_error('tab_list_id')))
+				{
+					throw new Exception(removeHtmlTags(form_error('tab_list_id')));
+				}
+				if(!empty(form_error('task_title')))
+				{
+					throw new Exception(removeHtmlTags(form_error('task_title')));
+				}
+				/* if(!empty(form_error('task_desc')))
+				{
+					throw new Exception(removeHtmlTags(form_error('task_desc')));
+				} */
+				if(!empty(form_error('assign_to')))
+				{
+					throw new Exception(removeHtmlTags(form_error('assign_to')));
+				}
+				if(!empty(form_error('report_to')))
+				{
+					throw new Exception(removeHtmlTags(form_error('report_to')));
+				}
+				if(!empty(form_error('priority')))
+				{
+					throw new Exception(removeHtmlTags(form_error('priority')));
+				}
+				
+			} else {
+
+				$this->task_model->deleteAllTask($input_params['tab_list_id']);
+
+				for($i=0; $i < count($input_params['task_title']); $i++)
+				{
+					$params = array(
+						'tab_list_id'	=> $input_params['tab_list_id'],
+						'task_title'	=> $input_params['task_title'][$i],
+						'assign_to'		=> $input_params['assign_to'],
+						'report_to'		=> $input_params['report_to'],
+						'priority'		=> $input_params['priority'],
+						'added_by'		=> $input_params['user_id'],
+						'added_date'	=> getCurrentDateTime()
+					);
+					
+					$this->task_model->addTask($params);
+				}
+				
+				$result = $this->task_model->taskList($input_params['tab_list_id']);
+				$this->response_arr['success'] = 1;
+				$this->response_arr['message'] = $this->lang->line('DATA_ADDED');
+				$this->response_arr['data'] = $result;
+			}
+			
+		} catch (Exception $e) {
+			$this->response_arr['success'] = 0;
+			$this->response_arr['message'] = $e->getMessage();
+		}
+
+		$this->response($this->response_arr, REST_Controller::HTTP_OK);
+	}
+    
 	public function addTask_post()
 	{
 		$input_params = $this->input->post();

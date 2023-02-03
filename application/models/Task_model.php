@@ -9,7 +9,19 @@ class Task_model extends CI_Model
         parent::__construct();
     }
 
-    public function taskList($id = '')
+    public function taskList($tab_list_id = '')
+    {
+        if (!empty($tab_list_id) && is_numeric($tab_list_id)) {
+            $this->db->where('tab_list_id', $tab_list_id);
+        }
+
+        $this->db->select('task_id, tab_list_id, task_title, task_desc, assign_to, report_to, priority, added_by, added_date');
+        $this->db->order_by('task_id', 'DESC');
+        $res = $this->db->get('task_list')->result_array();
+        return $res;
+    }
+
+    public function taskDetail($id = '')
     {
         if (!empty($id) && is_numeric($id)) {
             $this->db->where('task_id', $id);
@@ -39,6 +51,12 @@ class Task_model extends CI_Model
         $this->db->delete('task_list');
     }
     
+    public function deleteAllTask($tab_list_id)
+    {
+        $this->db->where('tab_list_id', $tab_list_id);
+        $this->db->delete('task_list');
+    }
+    
     public function taskTabList($project_id = '')
     {
         if (!empty($project_id) && is_numeric($project_id)) {
@@ -46,7 +64,7 @@ class Task_model extends CI_Model
         }
 
         $this->db->select('tab_list_id, tab_list_name, project_id');
-        $this->db->order_by('tab_list_id', 'DESC');
+        // $this->db->order_by('tab_list_id', 'DESC');
         $res = $this->db->get('task_tab_list')->result_array();
         return $res;
     }
