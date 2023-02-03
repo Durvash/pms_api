@@ -97,4 +97,25 @@ class User_model extends CI_Model
         return $res;
     }
 
+    public function deleteAllProjectMembers($project_id)
+    {
+        $this->db->where('project_id', $project_id);
+        $this->db->delete('project_members');
+    }
+
+    public function addProjectMember($params)
+    {
+        $this->db->insert('project_members', $params);
+        return $this->db->insert_id();
+    }
+
+    public function getProjectMembers($project_id)
+    {
+        $this->db->select('pm.member_id, pm.user_id, pm.added_by AS added_by_in_project, pm.added_date AS added_date_in_project, um.first_name, um.last_name, um.email, um.company_id, um.added_by, um.added_date');
+        $this->db->where('pm.project_id', $project_id);
+        $this->db->from('user_master AS um');
+        $this->db->join('project_members AS pm', 'pm.user_id = um.user_id');
+        return $this->db->get()->result_array();
+    }
+
 }

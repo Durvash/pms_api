@@ -367,4 +367,68 @@ class User extends REST_Controller {
 		
 		$this->response($this->response_arr, REST_Controller::HTTP_OK);
 	}
+
+	public function addMultiProjectMembers_post()
+	{
+		$input_params = $this->input->post();
+		// pr($input_params,1);
+
+		try {
+			$this->load->library('form_validation');
+			
+			$this->form_validation->set_rules('project_id', 'Project Id', 'trim|required');
+			$this->form_validation->set_rules('email[]', 'Email', 'trim|required|valid_email|min_length[6]|max_length[60]');
+			
+			if ($this->form_validation->run() == FALSE)
+			{
+				if(!empty(form_error('project_id')))
+				{
+					throw new Exception(removeHtmlTags(form_error('project_id')));
+				}
+				if(!empty(form_error('email')))
+				{
+					throw new Exception(removeHtmlTags(form_error('email')));
+				}
+				
+			} else {
+
+				$this->user_model->deleteAllProjectMembers($input_params['project_id']);
+
+				for($i=0; $i < count($input_params['email']); $i++)
+				{
+					$params = array(
+						'email'			=> $input_params['email'][$i],
+						'company_id'	=> $input_params['company_id'],
+						'added_by'		=> $input_params['user_id'],
+						'added_date'	=> getCurrentDateTime()
+					);
+					
+					$member_id = $this->user_model->addEmail($params);
+
+					if($member_id)
+					{
+						$params = array(
+							'project_id'	=> $input_params['project_id'],
+							'user_id'		=> $member_id,
+							'added_by'		=> $input_params['user_id'],
+							'added_date'	=> getCurrentDateTime()
+						);
+						
+						$this->user_model->addProjectMember($params);
+					}
+				}
+				
+				$result = $this->user_model->getProjectMembers($input_params['project_id']);
+				$this->response_arr['success'] = 1;
+				$this->response_arr['message'] = $this->lang->line('DATA_ADDED');
+				$this->response_arr['data'] = $result;
+			}
+			
+		} catch (Exception $e) {
+			$this->response_arr['success'] = 0;
+			$this->response_arr['message'] = $e->getMessage();
+		}
+
+		$this->response($this->response_arr, REST_Controller::HTTP_OK);
+	}
 }
