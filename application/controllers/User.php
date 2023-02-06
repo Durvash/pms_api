@@ -396,14 +396,23 @@ class User extends REST_Controller {
 
 				for($i=0; $i < count($input_params['email']); $i++)
 				{
-					$params = array(
-						'email'			=> $input_params['email'][$i],
-						'company_id'	=> $input_params['company_id'],
-						'added_by'		=> $input_params['user_id'],
-						'added_date'	=> getCurrentDateTime()
-					);
-					
-					$member_id = $this->user_model->addEmail($params);
+					$exist_email = $this->user_model->checkEmailExist($input_params['email'][$i]);
+
+					if(!empty($exist_email))
+					{
+						$member_id = $exist_email['user_id'];
+
+					} else {
+
+						$params = array(
+							'email'			=> $input_params['email'][$i],
+							'company_id'	=> $input_params['company_id'],
+							'added_by'		=> $input_params['user_id'],
+							'added_date'	=> getCurrentDateTime()
+						);
+						
+						$member_id = $this->user_model->addEmail($params);
+					}
 
 					if($member_id)
 					{
