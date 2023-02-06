@@ -118,4 +118,11 @@ class User_model extends CI_Model
         return $this->db->get()->result_array();
     }
 
+    public function checkEmailExist($email)
+    {
+        $this->db->select('user_id, email');
+        $this->db->where('email', $email);
+        return $this->db->get('user_master')->row_array();
+    }
+
 }
