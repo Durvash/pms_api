@@ -18,10 +18,12 @@ $route['add_company'] = 'company/addCompany';
 $route['update_company'] = 'company/updateCompany';
 $route['delete_company'] = 'company/deleteCompany';
 
+$route['project_list'] = 'project';
 $route['add_project'] = 'project/addProject';
 $route['update_project'] = 'project/updateProject';
 $route['delete_project'] = 'project/deleteProject';
 
+$route['task_section_list'] = 'task/taskTabList';
 $route['add_task_section'] = 'task/addTaskTab';
 $route['add_multi_task_section'] = 'task/addMultiTaskTab';
 $route['update_task_section'] = 'task/updateTaskTab';
