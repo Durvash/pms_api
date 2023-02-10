@@ -110,7 +110,7 @@ class Api_Connector
 		if(!empty($res))
 		{
 			//// Dividing by 3600 because there are 3600 seconds in one hour
-			$diff_hour = round((strtotime(date('Y-m-d H:i:s')) - strtotime($res['added_date']))/3600, 1);
+			$diff_hour = round((strtotime(date('Y-m-d H:i:s')) - strtotime($res['added_date']))/(3600*2), 1);
 
 			if($diff_hour < TOKEN_VALID_HOUR)
 			{
