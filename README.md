@@ -7,8 +7,11 @@ The PHP Project Management System (PMS) is a robust tool developed in PHP to str
 
 # 1.	Task Management:
 •	Create and assign tasks to team members.
+
 •	Set due dates and priorities for tasks.
+
 •	Track task progress and completion.
+
 
 # 2.	Project Planning:
 •	Create and visualize project timelines.
